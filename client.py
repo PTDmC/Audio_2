@@ -20,24 +20,24 @@ def operation(select):
     TEXT = "1"
 
     if(select == 0):
-        print("        Process : No Operation")
+        print("            Process : No Operation")
     elif(select == 1):
-        print("        Process : 1")
+        print("            Process : 1")
         HOST_NAME = "192.168.4.1"
         PORT = 5000
         TEXT = "1"
     elif(select == 2):
-        print("        Process : 2")
+        print("            Process : 2")
         HOST_NAME = "192.168.4.1"
         PORT = 5000
         TEXT = "2"
     elif(select == 3):
-        print("        Process : 3")
+        print("            Process : 3")
         HOST_NAME = "127.0.0.3"
         PORT = 5000
         TEXT = "3"
     elif(select == 4):
-        print("        Process : 4")
+        print("            Process : 4")
         HOST_NAME = "127.0.0.4"
         PORT = 5000
         TEXT = "4"
@@ -108,9 +108,10 @@ def exp_timing(data):
             time = 0
         time += 1   
 
-    print("Detection Count :", count)   
-    print("           Time :", Timing[0:count])  
-    print("            Max :", np.round(maxdata[0:count], 4))  
+    print("              Count :", count)   
+    print("               Time :", Timing[0:count])  
+    print("                Max :", np.round(maxdata[0:count], 4))  
+    print("")
 
     return count, Timing, maxdata,
 
@@ -123,19 +124,20 @@ def count(data):
     filename = 'model_sample.pickle'    #モデルの読み込み
     clf = pickle.load(open(filename, 'rb')) 
 
-    print("-prediction---------------------------------")
+    print("- 4.Prediction --------------------------------")
     true_count = 0
     for i in range(C) :
         dataset = data[int(T[i])].reshape(-1,1050) / M[i] * 0.999999999999
         y_pred = clf.predict(dataset)
-        print(y_pred)
+        print("                    :", y_pred)
         if (y_pred == 1): true_count += 1
-    
-    print("-end----------------------------------------")
-    print("     True Count :", true_count) 
-    C = 0
+    print("")
 
-    return C#true_count
+    print("- 5.Result ------------------------------------")
+    print("         True Count :", true_count) 
+
+    C = 0
+    return C #true_count
 
 
 # 更新関数 ##################################################################################################################################
@@ -157,24 +159,27 @@ def update_plot():
     if (Time >= TIME and record == True):
         Time = 0
         record = False
-        print("-recorded----------------------------------")
+        print("- 3.Recorded ----------------------------------")
         select = count(recorded_spectrum)   #回数判定関数
-
         operation(select)                   #WIFI操作
+        print("-----------------------------------------------")
+        print("")
 
     #録音開始合図
     if (data < 0.1 and wait == False and record == False and detect == True):
         Time = 0
         record = True
         detect = False
-        print("-recording---------------------------------")
+        print("- 2.Recording ---------------------------------")
+        print("")
 
     #音検出
     if (data > 0.2 and wait == False and record == False):
-        print("-detected----------------------------------")
+        print("- 1.Detected ----------------------------------")
         wait = True
         detect = True
         Time = 0
+        print("")
 
     if(record == False):
         None
