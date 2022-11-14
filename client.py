@@ -1,15 +1,13 @@
 import sounddevice as sd
 import numpy as np
-from matplotlib.animation import FuncAnimation
-import matplotlib.pyplot as plt
 import socket
 import pickle
 
 
 # デバイス設定 ##############################################################################################################################
-device_list = sd.query_devices() # デバイス一覧
+#device_list = sd.query_devices() # デバイス一覧
 #print(device_list)
-sd.default.device = [1, 4] # Input, Outputデバイス指定
+sd.default.device = [1, 6] # Input, Outputデバイス指定 [1, 6]
 
 
 # クライアント操作(WIFI通信) ################################################################################################################
@@ -94,14 +92,9 @@ def exp_timing(data):
 
     for i in range(TIME):
         average[i] = np.average(data[i])
-        #print(average[i])
 
-        #maxdata[i] = max(data[i])
-        #print(maxdata[i])
-        #if (average[i] >= 0.05):
-        #    thresh_over += 1
-
-        if (average[i] >= 0.0005 and time >= 5) :
+        if (average[i] >= 0.000030 and time >= 5) :
+            #print(average[i])
             Timing[count] = i
             maxdata[count] = max(data[i])
             count += 1
@@ -137,6 +130,7 @@ def count(data):
     print("         True Count :", true_count) 
 
     C = 0
+
     return C #true_count
 
 
@@ -145,6 +139,7 @@ def update_plot():
     global plotdata, Framesize, Time, wait, detect, record, recording_data, TIME
 
     data = round(np.abs(np.max(plotdata[42963:44099])),3)
+
 
     #時間経過
     Time += 1
@@ -166,7 +161,7 @@ def update_plot():
         print("")
 
     #録音開始合図
-    if (data < 0.1 and wait == False and record == False and detect == True):
+    if (data < 0.01 and wait == False and record == False and detect == True):
         Time = 0
         record = True
         detect = False
@@ -174,7 +169,7 @@ def update_plot():
         print("")
 
     #音検出
-    if (data > 0.2 and wait == False and record == False):
+    if (data > 0.01 and wait == False and record == False):
         print("- 1.Detected ----------------------------------")
         wait = True
         detect = True
