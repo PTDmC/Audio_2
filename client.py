@@ -1,15 +1,13 @@
 import sounddevice as sd
 import numpy as np
-from matplotlib.animation import FuncAnimation
-import matplotlib.pyplot as plt
 import socket
 import pickle
 
 
 # デバイス設定 ##############################################################################################################################
-device_list = sd.query_devices() # デバイス一覧
+#device_list = sd.query_devices() # デバイス一覧
 #print(device_list)
-sd.default.device = [1, 4] # Input, Outputデバイス指定
+sd.default.device = [1, 6] # Input, Outputデバイス指定 [1, 6]
 
 
 # クライアント操作(WIFI通信) ################################################################################################################
@@ -20,24 +18,24 @@ def operation(select):
     TEXT = "1"
 
     if(select == 0):
-        print("        Process : No Operation")
+        print("            Process : No Operation")
     elif(select == 1):
-        print("        Process : 1")
+        print("            Process : 1")
         HOST_NAME = "192.168.4.1"
         PORT = 5000
         TEXT = "1"
     elif(select == 2):
-        print("        Process : 2")
+        print("            Process : 2")
         HOST_NAME = "192.168.4.1"
         PORT = 5000
         TEXT = "2"
     elif(select == 3):
-        print("        Process : 3")
+        print("            Process : 3")
         HOST_NAME = "127.0.0.3"
         PORT = 5000
         TEXT = "3"
     elif(select == 4):
-        print("        Process : 4")
+        print("            Process : 4")
         HOST_NAME = "127.0.0.4"
         PORT = 5000
         TEXT = "4"
@@ -94,23 +92,19 @@ def exp_timing(data):
 
     for i in range(TIME):
         average[i] = np.average(data[i])
-        #print(average[i])
 
-        #maxdata[i] = max(data[i])
-        #print(maxdata[i])
-        #if (average[i] >= 0.05):
-        #    thresh_over += 1
-
-        if (average[i] >= 0.0005 and time >= 5) :
+        if (average[i] >= 0.000030 and time >= 5) :
+            #print(average[i])
             Timing[count] = i
             maxdata[count] = max(data[i])
             count += 1
             time = 0
         time += 1   
 
-    print("Detection Count :", count)   
-    print("           Time :", Timing[0:count])  
-    print("            Max :", np.round(maxdata[0:count], 4))  
+    print("              Count :", count)   
+    print("               Time :", Timing[0:count])  
+    print("                Max :", np.round(maxdata[0:count], 4))  
+    print("")
 
     return count, Timing, maxdata,
 
@@ -123,19 +117,21 @@ def count(data):
     filename = 'model_sample.pickle'    #モデルの読み込み
     clf = pickle.load(open(filename, 'rb')) 
 
-    print("-prediction---------------------------------")
+    print("- 4.Prediction --------------------------------")
     true_count = 0
     for i in range(C) :
         dataset = data[int(T[i])].reshape(-1,1050) / M[i] * 0.999999999999
         y_pred = clf.predict(dataset)
-        print(y_pred)
+        print("                    :", y_pred)
         if (y_pred == 1): true_count += 1
-    
-    print("-end----------------------------------------")
-    print("     True Count :", true_count) 
+    print("")
+
+    print("- 5.Result ------------------------------------")
+    print("         True Count :", true_count) 
+
     C = 0
 
-    return C#true_count
+    return C #true_count
 
 
 # 更新関数 ##################################################################################################################################
@@ -143,6 +139,7 @@ def update_plot():
     global plotdata, Framesize, Time, wait, detect, record, recording_data, TIME
 
     data = round(np.abs(np.max(plotdata[42963:44099])),3)
+
 
     #時間経過
     Time += 1
@@ -157,24 +154,27 @@ def update_plot():
     if (Time >= TIME and record == True):
         Time = 0
         record = False
-        print("-recorded----------------------------------")
+        print("- 3.Recorded ----------------------------------")
         select = count(recorded_spectrum)   #回数判定関数
-
         operation(select)                   #WIFI操作
+        print("-----------------------------------------------")
+        print("")
 
     #録音開始合図
-    if (data < 0.1 and wait == False and record == False and detect == True):
+    if (data < 0.01 and wait == False and record == False and detect == True):
         Time = 0
         record = True
         detect = False
-        print("-recording---------------------------------")
+        print("- 2.Recording ---------------------------------")
+        print("")
 
     #音検出
-    if (data > 0.2 and wait == False and record == False):
-        print("-detected----------------------------------")
+    if (data >= 0.01 and wait == False and record == False):
+        print("- 1.Detected ----------------------------------")
         wait = True
         detect = True
         Time = 0
+        print("")
 
     if(record == False):
         None

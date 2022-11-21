@@ -8,7 +8,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 import pickle
 
-df = pd.read_csv('C:/Users/siura/source/repos/Project_2022_2/Project_2022_2/learning_data/data.csv', header=None)
+df = pd.read_csv('C:/Users/m19335/Desktop/Project_2022_2/Project_2022_2/Project_2022_2/learning_data/data.csv', header=None)
 dataset = df.rename(columns={0: 'Judge'})
 
 dataX = dataset.drop(['Judge'], axis=1)
