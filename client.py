@@ -7,7 +7,7 @@ import pickle
 # デバイス設定 ##############################################################################################################################
 #device_list = sd.query_devices() # デバイス一覧
 #print(device_list)
-sd.default.device = [1, 6] # Input, Outputデバイス指定 [1, 6]
+sd.default.device = [10, 6] # Input, Outputデバイス指定 [1, 6]
 
 
 # クライアント操作(WIFI通信) ################################################################################################################
@@ -87,13 +87,13 @@ def exp_timing(data):
 
     count = 0
     thresh_over = 0
-    time = 5
+    time = int(round(TIME / 10, 0))
     Timing = np.zeros((TIME))
 
     for i in range(TIME):
         average[i] = np.average(data[i])
-        #print(i, round(average[i], 5))
-        if (average[i] >= 0.000030 and time >= 5) :
+        print(i, round(average[i], 5))
+        if (average[i] >= 0.000030 and time >= int(round(TIME / 10, 0))) :
             #print(average[i])
             Timing[count] = i
             maxdata[count] = max(data[i])
@@ -129,9 +129,7 @@ def count(data):
     print("- 5.Result ------------------------------------")
     print("         True Count :", true_count) 
 
-    C = 0
-
-    return C #true_count
+    return true_count
 
 
 # 更新関数 ##################################################################################################################################
@@ -139,10 +137,13 @@ def update_plot():
     global plotdata, Framesize, Time, wait, detect, record, recording_data, TIME
 
     data = round(np.abs(np.max(plotdata[42963:44099])), 3)
+    #print(Time)
 
-
-    #待ち時間
-    if (Time >= 5 and data < 0.01 and record == False):
+    #待ち時間管理
+    if (Time == int(round(TIME / 10, 0)) and detect == False and record == False):
+        print("- 0.Stand-By ----------------------------------")
+        print("")
+    if (Time >= int(round(TIME / 10, 0)) and data < 0.01 and record == False):
         wait = False
 
     #録音
@@ -169,7 +170,7 @@ def update_plot():
 
     #録音開始合図
     if (data < 0.01 and wait == False and record == False and detect == True):
-        Time = -2
+        Time = -int(round(TIME / 25, 0))
         record = True
         detect = False
 
@@ -191,6 +192,7 @@ downsample = 1
 Framesize = 2100
 fsample = 44100
 TIME = 48                                           #録音時間
+
 length = int(1000 * 44100 / (1000 * downsample))
 
 plotdata = np.zeros((length))
@@ -217,4 +219,4 @@ with stream:
         while(True):
             sd.sleep(1)
     except KeyboardInterrupt:
-        print("Stop Recording")
+        print("- Stop Recording ------------------------------")
