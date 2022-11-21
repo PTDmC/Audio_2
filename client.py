@@ -137,7 +137,7 @@ def update_plot():
     global plotdata, Framesize, Time, wait, detect, record, recording_data, TIME
 
     data = round(np.abs(np.max(plotdata[42963:44099])), 3)
-    #print(Time)
+    #print(" \r "+str(Time).rjust(6),end=" ")
 
     #待ち時間管理
     if (Time == int(round(TIME / 10, 0)) and detect == False and record == False):
