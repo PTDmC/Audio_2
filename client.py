@@ -191,7 +191,11 @@ def update_plot():
 downsample = 1
 Framesize = 2100
 fsample = 44100
-TIME = 48                                           #録音時間
+TIME = 192                                           #録音時間
+print("　　　　録音時間：",int(round(TIME)))
+print("　　　　待ち時間：",int(round(TIME / 10, 0)))
+print("録音開始猶予時間：",-int(round(TIME / 25, 0)))
+print("")
 
 length = int(1000 * 44100 / (1000 * downsample))
 
