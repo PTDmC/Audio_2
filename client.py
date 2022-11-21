@@ -76,7 +76,7 @@ def fourier():
     F = np.fft.fft(Frame)
     F = F / (Framesize / 2)                             # フーリエ変換の結果を正規化
     F = F * (Framesize / sum(window))                   # 窓関数による振幅補正
-    FFT_result = 20 * np.log10(np.abs(F) + 1e-18)       # 振幅スペクトル
+    #FFT_result = 20 * np.log10(np.abs(F) + 1e-18)       # 振幅スペクトル
 
     return F, #FFT_result
 
@@ -87,12 +87,12 @@ def exp_timing(data):
 
     count = 0
     thresh_over = 0
-    time = 3
+    time = 5
     Timing = np.zeros((TIME))
 
     for i in range(TIME):
         average[i] = np.average(data[i])
-
+        #print(i, round(average[i], 5))
         if (average[i] >= 0.000030 and time >= 5) :
             #print(average[i])
             Timing[count] = i
@@ -138,18 +138,24 @@ def count(data):
 def update_plot():
     global plotdata, Framesize, Time, wait, detect, record, recording_data, TIME
 
-    data = round(np.abs(np.max(plotdata[42963:44099])),3)
+    data = round(np.abs(np.max(plotdata[42963:44099])), 3)
 
 
-    #時間経過
-    Time += 1
-    if (Time >= 3 and data < 0.1 and record == False):
+    #待ち時間
+    if (Time >= 5 and data < 0.01 and record == False):
         wait = False
 
     #録音
-    if (Time < TIME and record == True):
+    if (0 <= Time < TIME and record == True):
+        if (Time == 0):
+            print("- 2.Recording ---------------------------------")
+            print("")
+        #print(Time)
         spectrum = fourier()                #短時間フーリエ変換
         recorded_spectrum[Time] = abs(spectrum[0][0:int(Framesize / 2)].real)
+    
+    #経過時間
+    Time += 1
 
     if (Time >= TIME and record == True):
         Time = 0
@@ -159,14 +165,13 @@ def update_plot():
         operation(select)                   #WIFI操作
         print("-----------------------------------------------")
         print("")
+        wait = True
 
     #録音開始合図
     if (data < 0.01 and wait == False and record == False and detect == True):
-        Time = 0
+        Time = -2
         record = True
         detect = False
-        print("- 2.Recording ---------------------------------")
-        print("")
 
     #音検出
     if (data >= 0.01 and wait == False and record == False):
@@ -208,5 +213,8 @@ stream = sd.InputStream(channels = 1,
                )
 
 with stream:
-    while(True):
-        sd.sleep(1)
+    try:
+        while(True):
+            sd.sleep(1)
+    except KeyboardInterrupt:
+        print("Stop Recording")
